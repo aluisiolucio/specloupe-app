@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -297,10 +297,13 @@ fn collect_displays(card_path: &str) -> Vec<DisplayOutput> {
             }));
         let modes = read_trim(format!("{base}/modes"))
             .map(|modes| {
+                // The kernel repeats a resolution once per refresh rate.
+                let mut seen = HashSet::new();
                 modes
                     .lines()
                     .map(str::trim)
                     .filter(|line| !line.is_empty())
+                    .filter(|line| seen.insert(line.to_string()))
                     .map(str::to_string)
                     .collect::<Vec<_>>()
             })

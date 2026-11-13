@@ -198,8 +198,8 @@ export function GpuPage({ info, latest }: GpuPageProps) {
                         <strong>{display.currentMode ?? "—"}</strong>
                       </div>
                       <div className="display-modes">
-                        {display.modes.slice(0, 4).map((mode) => (
-                          <span className="chip" key={mode}>{mode}</span>
+                        {display.modes.slice(0, 4).map((mode, index) => (
+                          <span className="chip" key={`${mode}-${index}`}>{mode}</span>
                         ))}
                         {display.modes.length === 0 && (
                           <span className="muted-copy">—</span>
