@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/specloupe.svg" />
@@ -10,22 +10,6 @@
       content="SpecLoupe — every spec under the loupe. A local-first Linux hardware and system inspector."
     />
     <title>SpecLoupe — Every spec under the loupe</title>
-    <script>
-      (() => {
-        try {
-          const stored = localStorage.getItem("specloupe-theme");
-          const theme =
-            stored === "light" || stored === "dark"
-              ? stored
-              : window.matchMedia("(prefers-color-scheme: light)").matches
-                ? "light"
-                : "dark";
-          document.documentElement.dataset.theme = theme;
-        } catch {
-          document.documentElement.dataset.theme = "dark";
-        }
-      })();
-    </script>
   </head>
 
   <body>

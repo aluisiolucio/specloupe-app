@@ -8,8 +8,6 @@ interface TopBarProps {
   overview: Overview;
   demo: boolean;
   paused: boolean;
-  theme: "dark" | "light";
-  onToggleTheme: () => void;
   onExport: () => void;
 }
 
@@ -18,8 +16,6 @@ export function TopBar({
   overview,
   demo,
   paused,
-  theme,
-  onToggleTheme,
   onExport,
 }: TopBarProps) {
   const meta = tabMeta(active);
@@ -50,16 +46,6 @@ export function TopBar({
           <span className="live-state">{paused ? t.topbar.paused : t.topbar.live}</span>
           <span className="live-rate">{t.topbar.sampling}</span>
         </span>
-
-        <button
-          type="button"
-          className="icon-button"
-          onClick={onToggleTheme}
-          title={theme === "dark" ? t.topbar.themeToLight : t.topbar.themeToDark}
-          aria-label={theme === "dark" ? t.topbar.themeToLight : t.topbar.themeToDark}
-        >
-          <Icon name={theme === "dark" ? "sun" : "moon"} size={17} />
-        </button>
 
         <button type="button" className="button button-accent" onClick={onExport}>
           <Icon name="download" size={15} />

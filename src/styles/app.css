@@ -450,14 +450,6 @@ button {
   color: #181207;
 }
 
-[data-theme="light"] .button-accent {
-  color: #fffaf0;
-}
-
-[data-theme="light"] .button-accent:hover {
-  color: #fffaf0;
-}
-
 .button-quiet {
   background: transparent;
 }
@@ -2433,10 +2425,6 @@ button {
   -webkit-backdrop-filter: blur(9px);
   backdrop-filter: blur(9px);
   animation: fade 0.18s var(--ease);
-}
-
-[data-theme="light"] .dialog-backdrop {
-  background: rgba(46, 37, 20, 0.28);
 }
 
 .dialog {

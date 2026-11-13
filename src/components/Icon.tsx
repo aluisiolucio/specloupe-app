@@ -73,15 +73,6 @@ function paths(name: IconName) {
       );
     case "sensors":
       return <path d="M3 12h4l2.2-5 4 10 2.3-5H21" />;
-    case "sun":
-      return (
-        <>
-          <circle cx="12" cy="12" r="4" />
-          <path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6 19 19M19 5l-1.4 1.4M6.4 17.6 5 19" />
-        </>
-      );
-    case "moon":
-      return <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5Z" />;
     case "download":
       return (
         <>

@@ -137,7 +137,7 @@ Without Tauri, SpecLoupe automatically switches to a clearly labeled **Preview**
 src/                     React + TypeScript interface
   pages/                 One component per tab
   components/            Shared cards, gauges, sparklines, spec rows, dialogs
-  hooks/                 Data loading, live sampling, theme, privileged data
+  hooks/                 Data loading, live sampling, privileged data
   lib/                   API bridge, formatting, demo data, report builder
   styles/                Design tokens and the full visual system
 src-tauri/src/

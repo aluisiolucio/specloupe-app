@@ -2,7 +2,7 @@ export const t = {
   app: {
     name: "SpecLoupe",
     tagline: "Every spec under the loupe.",
-    version: "v0.1.0",
+    version: "v0.1.1",
     license: "MIT",
   },
   groups: {
@@ -29,8 +29,6 @@ export const t = {
     preview: "Preview",
     demoHint: "Sample data — running outside the desktop shell",
     export: "Export report",
-    themeToDark: "Switch to dark theme",
-    themeToLight: "Switch to light theme",
     restrictedReady: "polkit helper ready",
     standardUser: "standard user",
     noNetwork: "No network access",

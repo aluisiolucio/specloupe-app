@@ -8,7 +8,6 @@ import { ErrorScreen, LoadingScreen } from "./components/States";
 import { useLive } from "./hooks/useLive";
 import { usePrivileged } from "./hooks/usePrivileged";
 import { useSystemInfo } from "./hooks/useSystemInfo";
-import { useTheme } from "./hooks/useTheme";
 import { t } from "./i18n/en";
 import { TABS } from "./lib/tabs";
 import type { TabId } from "./lib/types";
@@ -27,11 +26,23 @@ export default function App() {
   const [exportOpen, setExportOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const privilegedRequested = useRef(false);
 
-  const { theme, toggle } = useTheme();
   const system = useSystemInfo();
   const live = useLive();
   const privileged = usePrivileged();
+
+  // Request privileged DMI/SMART access once, as soon as the app identifies the machine.
+  useEffect(() => {
+    if (privilegedRequested.current) {
+      return;
+    }
+    if (!system.info?.capabilities.privilegedAvailable) {
+      return;
+    }
+    privilegedRequested.current = true;
+    void privileged.load();
+  }, [system.info, privileged.load]);
 
   useEffect(() => {
     if (contentRef.current) {
@@ -92,8 +103,6 @@ export default function App() {
             overview={info.overview}
             demo={system.demo}
             paused={live.paused}
-            theme={theme}
-            onToggleTheme={toggle}
             onExport={() => setExportOpen(true)}
           />
         ) : (

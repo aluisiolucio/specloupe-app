@@ -10,8 +10,6 @@ export type IconName =
   | "network"
   | "software"
   | "sensors"
-  | "sun"
-  | "moon"
   | "download"
   | "refresh"
   | "lock"
