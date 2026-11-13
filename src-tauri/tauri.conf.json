@@ -1,0 +1,46 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "SpecLoupe",
+  "version": "0.1.0",
+  "identifier": "io.github.aluisiolucio.SpecLoupe",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "SpecLoupe",
+        "width": 1180,
+        "height": 780,
+        "minWidth": 940,
+        "minHeight": 640,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "publisher": "Aluisio Lucio",
+    "homepage": "https://github.com/aluisiolucio/specloupe-app",
+    "license": "MIT",
+    "licenseFile": "../LICENSE",
+    "category": "Utility",
+    "shortDescription": "Every spec under the loupe.",
+    "longDescription": "A local-first Linux hardware and system inspector with dense technical readouts, live sensors and privacy-aware reports.",
+    "copyright": "Copyright © 2026 Aluisio Lucio",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  }
+}

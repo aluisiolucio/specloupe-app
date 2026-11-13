@@ -1,0 +1,101 @@
+:root {
+  color-scheme: dark;
+
+  --font-sans: "IBM Plex Sans", "Noto Sans", "DejaVu Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", "Noto Sans Mono", "DejaVu Sans Mono", ui-monospace, monospace;
+
+  --bg: #080b0e;
+  --bg-shell: #0a0e12;
+  --sidebar: #0b1014;
+  --panel: #0e1419;
+  --panel-alt: #111820;
+  --panel-raised: #151e26;
+
+  --line-soft: rgba(226, 218, 197, 0.055);
+  --line: rgba(226, 218, 197, 0.09);
+  --line-strong: rgba(226, 218, 197, 0.17);
+
+  --text: #e9e5d9;
+  --text-dim: #b6bab7;
+  --text-muted: #828c90;
+  --text-faint: #5c686e;
+
+  --accent: #d7a557;
+  --accent-strong: #f2c87e;
+  --accent-soft: rgba(215, 165, 87, 0.12);
+  --accent-soft-2: rgba(215, 165, 87, 0.055);
+  --accent-line: rgba(215, 165, 87, 0.34);
+
+  --mint: #77d4b2;
+  --mint-soft: rgba(119, 212, 178, 0.11);
+  --mint-line: rgba(119, 212, 178, 0.4);
+
+  --danger: #e87a6b;
+  --danger-soft: rgba(232, 122, 107, 0.12);
+  --danger-line: rgba(232, 122, 107, 0.4);
+
+  --warn: #e2b45d;
+  --warn-soft: rgba(226, 180, 93, 0.12);
+  --warn-line: rgba(226, 180, 93, 0.4);
+
+  --hover: rgba(255, 255, 255, 0.022);
+  --grid-line: rgba(226, 218, 197, 0.035);
+  --glow: rgba(215, 165, 87, 0.07);
+
+  --shadow-panel: 0 1px 0 rgba(255, 255, 255, 0.025) inset, 0 18px 40px rgba(0, 0, 0, 0.26);
+  --shadow-dialog: 0 40px 120px rgba(0, 0, 0, 0.62);
+
+  --radius-xs: 4px;
+  --radius-sm: 7px;
+  --radius: 10px;
+  --radius-lg: 14px;
+
+  --sidebar-width: 250px;
+  --topbar-height: 58px;
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #f1ede4;
+  --bg-shell: #f4f0e8;
+  --sidebar: #eae5d9;
+  --panel: #fbf9f3;
+  --panel-alt: #f5f1e7;
+  --panel-raised: #fffdf8;
+
+  --line-soft: rgba(35, 34, 28, 0.055);
+  --line: rgba(35, 34, 28, 0.105);
+  --line-strong: rgba(35, 34, 28, 0.2);
+
+  --text: #24282a;
+  --text-dim: #3f4649;
+  --text-muted: #6c7376;
+  --text-faint: #959a9a;
+
+  --accent: #97631b;
+  --accent-strong: #7a4f12;
+  --accent-soft: rgba(151, 99, 27, 0.1);
+  --accent-soft-2: rgba(151, 99, 27, 0.045);
+  --accent-line: rgba(151, 99, 27, 0.34);
+
+  --mint: #127a60;
+  --mint-soft: rgba(18, 122, 96, 0.09);
+  --mint-line: rgba(18, 122, 96, 0.32);
+
+  --danger: #bf4a3c;
+  --danger-soft: rgba(191, 74, 60, 0.09);
+  --danger-line: rgba(191, 74, 60, 0.32);
+
+  --warn: #94650f;
+  --warn-soft: rgba(148, 101, 15, 0.1);
+  --warn-line: rgba(148, 101, 15, 0.32);
+
+  --hover: rgba(52, 38, 12, 0.028);
+  --grid-line: rgba(35, 34, 28, 0.045);
+  --glow: rgba(151, 99, 27, 0.06);
+
+  --shadow-panel: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 14px 30px rgba(74, 58, 28, 0.07);
+  --shadow-dialog: 0 40px 100px rgba(56, 44, 20, 0.24);
+}
