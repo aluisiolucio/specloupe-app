@@ -1,13 +1,13 @@
 # SpecLoupe — complete spec inventory
 
-Review of every value SpecLoupe collects, where it appears, and what could be
-removed. Baseline: v0.1.1 plus the typography/empty-slot changes in progress.
+Review of every value SpecLoupe collects and where it appears. Baseline:
+v0.1.3, after the A + B + C cleanup.
 
 Legend:
 
 - **UI** — rendered in the desktop app.
 - **MD** — rendered in the Markdown report.
-- **Hidden** — collected and present in the JSON export, but not rendered anywhere.
+- **Toggle** — rendered only after the user enables a disclosure or filter.
 - **Live** — sampled at 1 Hz.
 - Every field listed below is present in the JSON export unless marked otherwise.
 - `DASH` means the UI prints an em dash when the kernel/firmware does not expose it.
@@ -16,19 +16,16 @@ Legend:
 
 | Field | Shown in | Notes |
 | --- | --- | --- |
-| `hostname` | Overview identity, top bar, Software session, MD | Useful for identifying the machine |
+| `hostname` | Overview identity, top bar, Software session, MD | Identifies the machine |
 | `osName` | Overview hero + identity, MD | Duplicated with Software → distribution |
 | `kernel` | Overview hero + identity, MD | Duplicated with Software → kernel |
 | `architecture` | Board page, MD | Duplicated with Software → architecture |
-| `desktop` | MD only | Duplicated with Software → desktop; **hidden in UI** |
-| `sessionType` | MD only | Duplicated with Software → session type; **hidden in UI** |
 | `uptimeSeconds` | Overview hero + identity, MD | Useful |
 | `bootTimeUnix` | Overview identity, MD | Low value, but cheap |
 | `vendor` | Overview identity, MD | Useful |
 | `product` | Overview hero + identity, MD | Useful |
 | `productVersion` | Overview identity, MD | Low value |
 | `chassisType` | Overview hero + identity, MD | Useful |
-| `isLaptop` | **Hidden** | Computed; never displayed or exported in Markdown |
 | Derived subtitle | Overview hero | CPU model · total RAM · first GPU name |
 | Per-core activity bars | Overview processor card | Derived from live topology |
 
@@ -54,13 +51,13 @@ Legend:
 | `driver` | Clocks card, MD | Low value |
 | `energyPreference` | Clocks card, MD | Enthusiast detail |
 | `virtualizations` | Identification + header tags, MD | Useful |
-| `flags` | Instruction set card (first 64, optional show-all) | 138 flags on the test host; noise, already collapsed |
+| `flags` | Instruction set card | Up to 24 notable flags; full list behind “Show all” |
 | `caches.level/kind/size` | Cache table, MD | Useful |
 | `caches.ways` | Cache table, MD | Enthusiast detail |
 | `caches.lineSize` | Cache table, MD | Enthusiast detail |
 | `caches.sharedBy` | Cache table, MD | Enthusiast detail |
 | `topology.coreId/packageId/threads` | Core topology tiles, Overview bars | Useful; package ID itself is not shown |
-| `topology.maxMhz/currentMhz` | Core tiles ("max" + live clock) | Useful |
+| `topology.maxMhz/currentMhz` | Core tiles (“max” + live clock) | Useful |
 | `vulnerabilities.name/status/level` | Vulnerabilities card, MD | Security-relevant |
 | Live per-core usage/frequency | Overview, Sensors, live tables | Useful |
 | Live package temp/power | Overview, Sensors, MD latest sample | Useful |
@@ -91,9 +88,10 @@ Legend:
 | `serialLocked` | Board tags | Derived indicator |
 | `architecture` | Board & firmware | Comes from `overview.architecture`; duplicate of CPU/Software |
 
-### Raw SMBIOS sections (only after privileged read)
+### Raw SMBIOS sections (privileged, behind a toggle)
 
-The Motherboard page prints every returned field of four DMI sections in full:
+The Motherboard page keeps the curated cards visible and puts the raw DMI dump
+behind **Show raw SMBIOS** (off by default):
 
 - **BIOS Information** — vendor, version, release date, address, runtime size, ROM size, platform firmware revision, embedded controller firmware revision, etc.
 - **System Information** — manufacturer, product name, version, serial number, UUID, wake-up type, SKU number, family, etc.
@@ -103,7 +101,7 @@ The Motherboard page prints every returned field of four DMI sections in full:
 These duplicate the curated cards above and include several fields users rarely
 need (`Address`, `Runtime Size`, `ROM Size`, `Asset Tag`, `SKU Number`, etc.).
 
-### SMBIOS processors
+### SMBIOS processors (behind the same toggle)
 
 | Field | Shown in | Notes |
 | --- | --- | --- |
@@ -113,7 +111,6 @@ need (`Address`, `Runtime Size`, `ROM Size`, `Asset Tag`, `SKU Number`, etc.).
 | `currentSpeed` | SMBIOS processors card | Duplicate of CPU current clock |
 | `coreCount` / `threadCount` | SMBIOS processors card | Duplicate of CPU |
 | `l2Cache` / `l3Cache` | SMBIOS processors card | Useful but duplicate of cache table |
-| `l1Cache` | **Hidden** | Collected, never displayed |
 
 ## 4. Memory (`Memory`)
 
@@ -126,8 +123,8 @@ need (`Address`, `Runtime Size`, `ROM Size`, `Asset Tag`, `SKU Number`, etc.).
 | `usedBytes` | Allocation hero + spec list, Overview, MD | Useful |
 | `freeBytes` | Allocation spec list, MD | Useful |
 | `cachedBytes` | Allocation legend + spec list, Overview, MD | Useful |
-| `buffersBytes` | Allocation spec list, MD | Low value for most users |
-| `sharedBytes` | Allocation spec list, MD | Low value for most users |
+| `buffersBytes` | JSON export and MD | Kept in the data model; no longer a UI row |
+| `sharedBytes` | JSON export and MD | Kept in the data model; no longer a UI row |
 | `swapTotalBytes` | Allocation spec list, MD | Useful |
 | `swapFreeBytes` | Allocation spec list (derived swap used), MD | Useful |
 | Live `total/used/available/swap` | Overview, Sensors, MD latest sample | Useful |
@@ -149,7 +146,7 @@ need (`Address`, `Runtime Size`, `ROM Size`, `Asset Tag`, `SKU Number`, etc.).
 | `voltage` | Voltage row | Often `DASH`; low value |
 | `formFactor` | Form factor row | Useful |
 | `populated` | Drives the empty-slot card | Useful |
-| Empty slot | Dedicated dashed card with slot, bank locator, status | New in this pass |
+| Empty slot | Dedicated dashed card with slot, bank locator, status | Shows free slots explicitly |
 | `swapFreeBytes` derived | Swap used row | Derived |
 
 ## 5. Graphics (`GPU`)
@@ -170,14 +167,11 @@ need (`Address`, `Runtime Size`, `ROM Size`, `Asset Tag`, `SKU Number`, etc.).
 | `pcie.maxSpeed/maxWidth` | PCIe card | Useful for link health |
 | Display `connector/status/currentMode/monitorName` | Displays card, MD | Useful |
 | Display `sizeCm` | Displays card | Low value |
-| Display `enabled` | **Hidden** | Collected, never displayed |
-| Display `modes` | Displays card (first 4 chips) | Clutter; full list is not exported |
+| Display `modes` | Displays card, behind **Show display modes** | Full list kept in JSON export |
 | OpenGL `name/vendor/renderer/version/apiVersion/memory/unified` | OpenGL card, MD | Useful, but often duplicates Vulkan |
 | Vulkan `name/vendor/renderer/version/apiVersion/memory/unified` | Vulkan card, MD | Useful, but often duplicates OpenGL |
 | Live GPU frequency | GPU showcase + Sensors, MD latest sample | Useful |
 | Live GPU temperature/usage | GPU showcase | Useful |
-| Live GPU VRAM used/total | **Hidden** | Collected, never displayed |
-| Live GPU name | **Hidden** | Collected, never displayed |
 
 ## 6. Storage (`Storage`)
 
@@ -187,7 +181,6 @@ need (`Address`, `Runtime Size`, `ROM Size`, `Asset Tag`, `SKU Number`, etc.).
 | --- | --- | --- |
 | `name` / `path` | Capacity tags, MD | Useful |
 | `model` | Card title + model row, MD | Useful |
-| `vendor` | **Hidden** | Collected, never displayed |
 | `serial` | Serial row, MD | Protected; export redacted by default |
 | `firmware` | Firmware row, MD | Useful |
 | `sizeBytes` | Capacity readout, MD | Useful |
@@ -203,16 +196,14 @@ need (`Address`, `Runtime Size`, `ROM Size`, `Asset Tag`, `SKU Number`, etc.).
 | Field | Shown in | Notes |
 | --- | --- | --- |
 | `name` | Partition table, MD | Useful |
-| `path` | **Hidden** | Collected, never displayed |
 | `sizeBytes` | Partition table, MD | Useful |
-| `kind` | **Hidden** | Collected, never displayed |
 | `fstype` | Partition table, MD | Useful |
 | `label` | Partition table, MD | Useful |
-| `uuid` | MD only (redacted by default) | Not shown in UI |
+| `uuid` | MD only (redacted by default) | Not shown in the UI |
 | `mountpoint` | Partition table, MD | Useful |
 | `fsTotalBytes` | Overview storage card (root), MD indirectly | Used only for root summary |
 | `fsUsedBytes` | Overview storage card (root), MD indirectly | Used only for root summary |
-| `fsAvailableBytes` | **Hidden** | Collected, never displayed |
+| `fsAvailableBytes` | **Hidden** | Collected and exported, never displayed |
 | `fsUsePercent` | Partition usage meter, MD | Useful |
 
 ### SMART (privileged)
@@ -220,9 +211,7 @@ need (`Address`, `Runtime Size`, `ROM Size`, `Asset Tag`, `SKU Number`, etc.).
 | Field | Shown in | Notes |
 | --- | --- | --- |
 | `device` | Matched to disk, MD | Useful |
-| `model` | **Hidden** (disk model is shown instead) | Collected, never displayed |
 | `serial` | Fallback serial, MD | Protected |
-| `firmware` | **Hidden** | Collected, never displayed |
 | `healthPassed` / `healthText` | SMART badge | Useful |
 | `temperatureC` | SMART strip, MD | Useful |
 | `powerOnHours` | SMART strip, MD | Useful |
@@ -230,9 +219,9 @@ need (`Address`, `Runtime Size`, `ROM Size`, `Asset Tag`, `SKU Number`, etc.).
 | `percentageUsed` | SMART strip, MD | Useful |
 | `dataWrittenBytes` | SMART strip, MD | Useful |
 | `mediaErrors` | SMART strip, MD | Useful |
-| `reallocatedSectors` | **Hidden** | Valuable ATA health signal; currently collected but not shown |
-| `pendingSectors` | **Hidden** | Valuable ATA health signal; currently collected but not shown |
-| `uncorrectableSectors` | **Hidden** | Valuable ATA health signal; currently collected but not shown |
+| `reallocatedSectors` | SMART strip + MD only when > 0 | Amber warning |
+| `pendingSectors` | SMART strip + MD only when > 0 | Red warning |
+| `uncorrectableSectors` | SMART strip + MD only when > 0 | Red warning |
 
 ## 7. Network (`Network`)
 
@@ -245,17 +234,16 @@ need (`Address`, `Runtime Size`, `ROM Size`, `Asset Tag`, `SKU Number`, etc.).
 | `duplex` | Duplex row | Useful |
 | `mtu` | MTU row, MD | Low value |
 | `driver` | Driver row, MD | Useful |
-| `vendor` | **Hidden** | Collected, never displayed |
 | `device` | Device row, MD | Useful |
 | `pciAddress` | PCI address row, MD | Useful |
 | `isWireless` | Wireless tag, MD title | Useful |
-| `isVirtual` | Virtual tag, MD title | Useful |
+| `isVirtual` | Virtual tag, MD title | Drives the default filter |
 | `addresses.family` | Address chip, MD | Useful |
 | `addresses.address` | Address chip, MD | Protected; export redacted by default |
 | `addresses.prefixLen` | Address chip, MD | Useful |
-| `addresses.scope` | Address chip | Low value but helps distinguish link-local |
-| Virtual interfaces (loopback, docker, veth, bridges, etc.) | One card each | Major clutter candidate |
-| IPv6 link-local addresses | Address chips | Clutter candidate |
+| `addresses.scope` | Address chip | Drives the link-local filter |
+| Virtual interfaces | Behind **Show virtual interfaces** (off by default) | Loopback, bridges, VPN, container links |
+| IPv6 link-local addresses | Behind **Show link-local addresses** (off by default) | `scope=link` chips |
 
 ## 8. Software & environment (`Software`)
 
@@ -265,7 +253,7 @@ need (`Address`, `Runtime Size`, `ROM Size`, `Asset Tag`, `SKU Number`, etc.).
 | `distroId` | OS card, MD | Low value |
 | `distroVersion` | OS card, MD | Useful |
 | `distroIdLike` | OS card, MD | Low value |
-| `architecture` | OS card + package card, MD | **Repeated twice on the page** |
+| `architecture` | OS card, MD | Duplicate row removed from Package inventory |
 | `glibc` | OS card, MD | Low value |
 | `systemd` | OS card, MD | Low value |
 | `kernel` | Kernel card, MD | Useful |
@@ -273,7 +261,7 @@ need (`Address`, `Runtime Size`, `ROM Size`, `Asset Tag`, `SKU Number`, etc.).
 | `bootMode` | Kernel card + header tag, MD | Useful |
 | `secureBoot` | Kernel card + header tag, MD | Useful |
 | `virtualization` | Kernel card, MD | Useful |
-| `kernelCmdline` | Kernel card, MD | Long; low value outside debugging |
+| `kernelCmdline` | Kernel card, behind **Show advanced details** | Long; low value outside debugging |
 | `desktop` | Session card, MD | Useful |
 | `sessionType` | Session card, MD | Useful |
 | `shell` | Session card, MD | Low value |
@@ -283,10 +271,10 @@ need (`Address`, `Runtime Size`, `ROM Size`, `Asset Tag`, `SKU Number`, etc.).
 | `packageManager` | Package card, MD | Useful |
 | `packageCount` | Package card, MD | Useful |
 | `flatpakCount` | Package card, MD | Useful only on Flatpak systems |
-| `extra.VARIANT` / `VARIANT_ID` | OS release card, MD | Low value |
-| `extra.BUILD_ID` | OS release card, MD | Low value |
-| `extra.HOME_URL` | OS release card, MD | Irrelevant for a hardware inspector |
-| `extra.DOCUMENTATION_URL` | OS release card, MD | Irrelevant for a hardware inspector |
+| `extra.VARIANT` / `VARIANT_ID` | OS-release card, behind **Show advanced details** | Low value |
+| `extra.BUILD_ID` | OS-release card, behind **Show advanced details** | Low value |
+| `extra.HOME_URL` | Filtered out of the UI and Markdown report | Irrelevant for a hardware inspector |
+| `extra.DOCUMENTATION_URL` | Filtered out of the UI and Markdown report | Irrelevant for a hardware inspector |
 
 ## 9. Live telemetry (`Sensors`)
 
@@ -302,8 +290,6 @@ need (`Address`, `Runtime Size`, `ROM Size`, `Asset Tag`, `SKU Number`, etc.).
 | `cpu.governor` | Sensors kernel context, MD | Useful |
 | `memory.total/used/available/swapTotal/swapUsed` | Overview, Sensors, MD | Some values duplicate static memory page |
 | `gpus.pciAddress/freqMhz/tempC/usagePercent` | GPU page, Sensors (frequency) | Useful |
-| `gpus.vramUsed/vramTotal` | **Hidden** | Collected, never displayed |
-| `gpus.name` | **Hidden** | Collected, never displayed |
 | `temperatures.source/label/valueC` | Sensors temperature list, MD | Useful; can be a long list |
 | `fans.source/label/rpm` | Sensors fan list, MD (first fan only) | Useful |
 | `battery.name` | Battery card | Useful |
@@ -312,7 +298,6 @@ need (`Address`, `Runtime Size`, `ROM Size`, `Asset Tag`, `SKU Number`, etc.).
 | `battery.voltageV` | Battery card | Useful |
 | `battery.powerW` | Battery card | Useful |
 | `battery.energyNowWh` | Battery card | Useful |
-| `battery.energyFullWh` | **Hidden** | Collected, never displayed |
 | `processCount` | Sensors kernel context, MD | Useful |
 
 ## 10. Capabilities / internal flags
@@ -322,61 +307,39 @@ need (`Address`, `Runtime Size`, `ROM Size`, `Asset Tag`, `SKU Number`, etc.).
 | `privilegedAvailable` | Privileged panel + startup authorization | Useful |
 | `smartAvailable` | Privileged panel notice | Useful |
 | `raplLocked` | Sensors package-power lock notice | Useful |
-| `lmSensorsAvailable` | **Hidden** | Computed, never read by the frontend |
-| `nvidiaSmiAvailable` | **Hidden** | Computed, never read by the frontend |
-| `rocmSmiAvailable` | **Hidden** | Computed, never read by the frontend |
-| `vulkaninfoAvailable` | **Hidden** | Computed, never read by the frontend |
-| `glxinfoAvailable` | **Hidden** | Computed, never read by the frontend |
 
-## 11. Pruning candidates
+## 11. What changed in v0.1.3
 
-Ordered by confidence. This is a proposal, not a decision — pick the groups you
-want removed/hidden and they can be applied together.
+### A. Removed (unused or duplicate)
 
-### A. Safe to remove (unused or duplicated)
+- `Overview.desktop`, `Overview.sessionType`, `Overview.isLaptop`.
+- Five unused capability flags: `lmSensorsAvailable`, `nvidiaSmiAvailable`,
+  `rocmSmiAvailable`, `vulkaninfoAvailable`, `glxinfoAvailable`.
+- `DmiProcessor.l1Cache`, `StorageDisk.vendor`, `PartitionInfo.path`,
+  `PartitionInfo.kind`, `NetInterface.vendor`, `DisplayOutput.enabled`,
+  `BatteryLive.energyFullWh`, `GpuLive.name/vramUsed/vramTotal`,
+  `SmartInfo.model/firmware`.
+- Duplicate `architecture` row in Software → Package inventory.
+- `extra.HOME_URL` and `extra.DOCUMENTATION_URL` from the UI and Markdown report.
 
-1. `Overview.desktop`, `Overview.sessionType` — only in the JSON/Markdown report;
-   Software already shows them.
-2. `Overview.isLaptop` — never used.
-3. Five unused capability flags: `lmSensorsAvailable`, `nvidiaSmiAvailable`,
-   `rocmSmiAvailable`, `vulkaninfoAvailable`, `glxinfoAvailable`.
-4. `DmiProcessor.l1Cache` — collected, never displayed.
-5. `StorageDisk.vendor` — collected, never displayed.
-6. `PartitionInfo.path`, `PartitionInfo.kind` — collected, never displayed.
-7. `NetInterface.vendor` — collected, never displayed.
-8. `DisplayOutput.enabled` — collected, never displayed.
-9. `BatteryLive.energyFullWh` — collected, never displayed.
-10. `GpuLive.name`, `GpuLive.vramUsed`, `GpuLive.vramTotal` — collected, never displayed.
-11. `SmartInfo.model`, `SmartInfo.firmware` — collected, never displayed.
-12. Duplicate `architecture` row in the Software page (keep the data; remove one row).
-13. `extra.HOME_URL` and `extra.DOCUMENTATION_URL` from the OS-release card.
+### B. Hidden behind a disclosure or filter by default
 
-### B. Hide behind a disclosure / filter by default
+- Raw DMI tables and SMBIOS processors → **Show raw SMBIOS**.
+- Virtual network interfaces → **Show virtual interfaces**.
+- IPv6 link-local addresses → **Show link-local addresses**.
+- `kernelCmdline` and OS-release extras → **Show advanced details**.
+- Memory `buffers`/`shared` rows removed from the allocation card.
+- GPU display modes → **Show display modes**.
+- CPU flags → notable virtualization/security/crypto flags, full list behind
+  **Show all (N)**.
 
-1. Raw DMI tables on Motherboard — keep a “Show raw SMBIOS” toggle instead of
-   four full cards. The curated board card already covers the relevant values.
-2. Virtual network interfaces (loopback, docker, veth, bridges, VPN) — show only
-   physical links by default, with a “Show virtual interfaces” toggle.
-3. IPv6 link-local addresses — hide `scope=link` by default.
-4. `kernelCmdline` — move to an advanced disclosure; it is long and rarely read.
-5. OS-release extras (`VARIANT`, `VARIANT_ID`, `BUILD_ID`) — hide with the rest
-   of the advanced details.
-6. Memory `buffers` and `shared` rows — keep in JSON if desired, hide from the
-   allocation card.
-7. GPU display `modes` chips — keep the current mode, hide the four-mode list
-   unless the card is expanded.
-8. CPU instruction-set flags — already collapsed at 64; consider showing only
-   the notable virtualization/security flags and putting the rest behind “show all”.
+### C. Surfaced SMART health signals
 
-### C. Surface instead of remove (currently hidden but useful)
+- `reallocatedSectors`, `pendingSectors`, `uncorrectableSectors` now appear in
+  the SMART strip and Markdown report only when greater than zero, using amber
+  and red warning colors.
 
-1. SMART `reallocatedSectors`, `pendingSectors`, `uncorrectableSectors` — show
-   only when non-zero; these are real ATA health signals.
-2. Populated module bank locator — already added in this pass; keep it.
-3. Battery `energyFullWh` — low priority; can stay hidden.
-4. GPU live VRAM used/total — low priority on shared-memory iGPUs; can stay hidden.
-
-### D. Keep (core hardware identity / health)
+### D. Deliberately kept
 
 - CPU model, cores/threads, clocks, cache size, vulnerabilities.
 - Motherboard product, board name, BIOS vendor/version/date, serial (protected).

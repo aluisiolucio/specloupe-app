@@ -328,8 +328,6 @@ fn read_battery() -> Option<BatteryLive> {
             voltage_v: read_f64_opt(format!("{base}/voltage_now")).map(|value| value / 1_000_000.0),
             power_w: read_f64_opt(format!("{base}/power_now")).map(|value| value / 1_000_000.0),
             energy_now_wh: read_f64_opt(format!("{base}/energy_now")).map(|value| value / 1_000_000.0),
-            energy_full_wh: read_f64_opt(format!("{base}/energy_full"))
-                .map(|value| value / 1_000_000.0),
         });
     }
     None
@@ -347,19 +345,11 @@ fn read_gpus() -> Vec<GpuLive> {
         let freq_mhz = freq_mhz.or_else(|| read_amdgpu_frequency(&base));
         let usage = read_u64(format!("{base}/device/gpu_busy_percent")).map(|value| value as f64);
         let temp = read_gpu_temperature(&base);
-        let name = if Path::new(&format!("{base}/gt_cur_freq_mhz")).exists() {
-            "Intel Graphics".to_string()
-        } else {
-            format!("GPU {pci_address}")
-        };
         values.push(GpuLive {
             pci_address,
-            name,
             freq_mhz,
             temp_c: temp,
             usage_percent: usage,
-            vram_used_bytes: read_u64(format!("{base}/device/mem_info_vram_used")),
-            vram_total_bytes: read_u64(format!("{base}/device/mem_info_vram_total")),
         });
     }
 
@@ -367,31 +357,22 @@ fn read_gpus() -> Vec<GpuLive> {
         if let Some(output) = run_command(
             "nvidia-smi",
             &[
-                "--query-gpu=name,pci.bus_id,clocks.current.graphics,temperature.gpu,utilization.gpu,memory.used,memory.total",
+                "--query-gpu=pci.bus_id,clocks.current.graphics,temperature.gpu,utilization.gpu",
                 "--format=csv,noheader,nounits",
             ],
         ) {
             for line in output.lines() {
                 let parts = line.split(',').map(str::trim).collect::<Vec<_>>();
-                if parts.len() < 7 {
+                if parts.len() < 4 {
                     continue;
                 }
-                let bus = parts[1].split(':').skip(1).collect::<Vec<_>>().join(":");
+                let bus = parts[0].split(':').skip(1).collect::<Vec<_>>().join(":");
                 let pci_address = format!("0000:{bus}");
                 values.push(GpuLive {
                     pci_address,
-                    name: parts[0].to_string(),
-                    freq_mhz: parts[2].parse::<f64>().ok(),
-                    temp_c: parts[3].parse::<f64>().ok(),
-                    usage_percent: parts[4].parse::<f64>().ok(),
-                    vram_used_bytes: parts[5]
-                        .parse::<u64>()
-                        .ok()
-                        .map(|value| value * 1024 * 1024),
-                    vram_total_bytes: parts[6]
-                        .parse::<u64>()
-                        .ok()
-                        .map(|value| value * 1024 * 1024),
+                    freq_mhz: parts[1].parse::<f64>().ok(),
+                    temp_c: parts[2].parse::<f64>().ok(),
+                    usage_percent: parts[3].parse::<f64>().ok(),
                 });
             }
         }

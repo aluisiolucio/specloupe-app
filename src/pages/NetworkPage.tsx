@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { Card } from "../components/Card";
 import { PageIntro } from "../components/PageIntro";
 import { EmptyState } from "../components/States";
@@ -11,7 +13,19 @@ interface NetworkPageProps {
   info: SystemInfo;
 }
 
-function InterfaceCard({ net, index }: { net: NetInterface; index: string }) {
+function InterfaceCard({
+  net,
+  index,
+  showLinkLocal,
+}: {
+  net: NetInterface;
+  index: string;
+  showLinkLocal: boolean;
+}) {
+  const addresses = showLinkLocal
+    ? net.addresses
+    : net.addresses.filter((address) => address.scope !== "link");
+  const hiddenLinkLocal = addresses.length < net.addresses.length;
   const stateTone =
     net.state === "up" ? "ok" : net.state === "down" ? "muted" : "neutral";
   return (
@@ -39,11 +53,13 @@ function InterfaceCard({ net, index }: { net: NetInterface; index: string }) {
 
       <div className="address-block">
         <div className="eyebrow">{L.addresses}</div>
-        {net.addresses.length === 0 ? (
-          <p className="muted-copy">No addresses assigned.</p>
+        {addresses.length === 0 ? (
+          <p className="muted-copy">
+            {hiddenLinkLocal ? L.linkLocalHidden : "No addresses assigned."}
+          </p>
         ) : (
           <div className="address-list">
-            {net.addresses.map((address) => (
+            {addresses.map((address) => (
               <span
                 className="address-chip"
                 key={`${address.family}-${address.address}`}
@@ -59,15 +75,24 @@ function InterfaceCard({ net, index }: { net: NetInterface; index: string }) {
             ))}
           </div>
         )}
+        {hiddenLinkLocal && addresses.length > 0 && (
+          <p className="address-note">{L.linkLocalHidden}</p>
+        )}
       </div>
     </Card>
   );
 }
 
 export function NetworkPage({ info }: NetworkPageProps) {
+  const [showVirtual, setShowVirtual] = useState(false);
+  const [showLinkLocal, setShowLinkLocal] = useState(false);
   const physical = info.network.filter((net) => !net.isVirtual);
   const virtual = info.network.filter((net) => net.isVirtual);
-  const ordered = [...physical, ...virtual];
+  const visible = showVirtual ? info.network : physical;
+  const linkLocalCount = info.network.reduce(
+    (count, net) => count + net.addresses.filter((address) => address.scope === "link").length,
+    0,
+  );
 
   return (
     <div className="page">
@@ -87,7 +112,37 @@ export function NetworkPage({ info }: NetworkPageProps) {
         }
       />
 
-      {ordered.length === 0 ? (
+      {info.network.length > 0 && (
+        <div className="filter-row">
+          <span className="filter-label">View</span>
+          {virtual.length > 0 && (
+            <button
+              type="button"
+              className={`filter-toggle${showVirtual ? " is-active" : ""}`}
+              aria-pressed={showVirtual}
+              onClick={() => setShowVirtual((current) => !current)}
+            >
+              {showVirtual
+                ? t.common.hideVirtual
+                : `${t.common.showVirtual} (${virtual.length})`}
+            </button>
+          )}
+          {linkLocalCount > 0 && (
+            <button
+              type="button"
+              className={`filter-toggle${showLinkLocal ? " is-active" : ""}`}
+              aria-pressed={showLinkLocal}
+              onClick={() => setShowLinkLocal((current) => !current)}
+            >
+              {showLinkLocal
+                ? t.common.hideLinkLocal
+                : `${t.common.showLinkLocal} (${linkLocalCount})`}
+            </button>
+          )}
+        </div>
+      )}
+
+      {info.network.length === 0 ? (
         <Card index="01" title={L.addresses}>
           <EmptyState
             title={t.empty.noNetworkTitle}
@@ -95,12 +150,19 @@ export function NetworkPage({ info }: NetworkPageProps) {
             icon="network"
           />
         </Card>
+      ) : visible.length === 0 ? (
+        <Card index="01" title="Physical interfaces">
+          <p className="muted-copy">
+            No physical interfaces found. Enable virtual interfaces to inspect them.
+          </p>
+        </Card>
       ) : (
         <div className="grid grid-2">
-          {ordered.map((net, index) => (
+          {visible.map((net, index) => (
             <InterfaceCard
               key={net.name}
               net={net}
+              showLinkLocal={showLinkLocal}
               index={String(index + 1).padStart(2, "0")}
             />
           ))}

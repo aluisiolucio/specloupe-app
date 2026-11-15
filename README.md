@@ -41,13 +41,13 @@ Use the **Export** button to save a Markdown or JSON report. Serial numbers, MAC
 
 ## Privileged data, without running as root
 
-Some values are only readable by root: DMI serial numbers, asset tags and full SMART health. SpecLoupe loads them only when you ask, through `pkexec`:
+Some values are only readable by root: DMI serial numbers, asset tags and full SMART health. SpecLoupe asks for that access once at startup, as soon as the machine has been identified, through `pkexec`:
 
 - The app executes a fixed, read-only Bash helper via PolicyKit.
 - The helper runs `dmidecode` for DMI types 0, 1, 2, 3, 4 and 17, and `smartctl -j -a` for detected physical disks.
 - Device paths are validated before they are passed to the helper.
 - No persistent root daemon, setuid binary or password is stored.
-- Dismissing the PolicyKit prompt simply leaves the privileged panels empty.
+- Dismissing the PolicyKit prompt simply leaves the privileged panels empty; you can retry from Motherboard, Memory or Storage.
 
 SpecLoupe never escalates itself to root. If it is launched as root, the helper runs directly.
 

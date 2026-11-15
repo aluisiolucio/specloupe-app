@@ -1,6 +1,6 @@
 [package]
 name = "specloupe-app"
-version = "0.1.2"
+version = "0.1.3"
 description = "Every spec under the loupe — a modern Linux hardware and system information app"
 authors = ["Aluisio Lucio"]
 edition = "2024"

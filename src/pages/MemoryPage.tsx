@@ -86,8 +86,6 @@ export function MemoryPage({ info, latest, privileged }: MemoryPageProps) {
             <SpecRow label={L.available} value={bytes(available)} />
             <SpecRow label={L.free} value={bytes(info.memory.freeBytes)} />
             <SpecRow label={L.cached} value={bytes(info.memory.cachedBytes)} />
-            <SpecRow label={L.buffers} value={bytes(info.memory.buffersBytes)} />
-            <SpecRow label={L.shared} value={bytes(info.memory.sharedBytes)} />
             <SpecRow label={L.swapTotal} value={bytes(swapTotal)} />
             <SpecRow label={L.swapUsed} value={bytes(swapUsed)} />
           </SpecList>

@@ -1,10 +1,12 @@
+import { useState } from "react";
+
 import { Card } from "../components/Card";
 import { PageIntro } from "../components/PageIntro";
 import { PrivilegedPanel } from "../components/PrivilegedPanel";
 import { SpecList, SpecRow } from "../components/SpecList";
 import { Tag } from "../components/Tag";
 import type { PrivilegedState } from "../hooks/usePrivileged";
-import { L } from "../i18n/en";
+import { t, L } from "../i18n/en";
 import { text } from "../lib/format";
 import type { DmiSection, SystemInfo } from "../lib/types";
 
@@ -40,6 +42,7 @@ function DmiSectionCard({
 }
 
 export function BoardPage({ info, privileged }: BoardPageProps) {
+  const [showRaw, setShowRaw] = useState(false);
   const board = info.board;
   const dmi = privileged.data?.dmi ?? null;
 
@@ -107,44 +110,63 @@ export function BoardPage({ info, privileged }: BoardPageProps) {
 
       {dmi ? (
         <>
-          <div className="section-label">
-            <span>SMBIOS tables</span>
-            <span className="section-label-line" />
-          </div>
-
-          <div className="grid grid-2">
-            <DmiSectionCard section={dmi.bios} index="03" />
-            <DmiSectionCard section={dmi.system} index="04" />
-            <DmiSectionCard section={dmi.board} index="05" />
-            <DmiSectionCard section={dmi.chassis} index="06" />
-          </div>
-
-          {dmi.processors.length > 0 && (
-            <Card
-              index="07"
-              title="SMBIOS processors"
-              aside={<span className="card-count">{dmi.processors.length} socket</span>}
+          <div className="filter-row">
+            <span className="filter-label">Raw SMBIOS</span>
+            <button
+              type="button"
+              className={`filter-toggle${showRaw ? " is-active" : ""}`}
+              aria-pressed={showRaw}
+              onClick={() => setShowRaw((current) => !current)}
             >
-              <div className="processor-list">
-                {dmi.processors.map((processor, index) => (
-                  <div className="processor-row" key={`${processor.socket}-${index}`}>
-                    <div className="processor-id">
-                      <span className="eyebrow">Socket {index + 1}</span>
-                      <strong>{text(processor.socket)}</strong>
-                      <span>{text(processor.version)}</span>
-                    </div>
-                    <SpecList className="spec-list-inline">
-                      <SpecRow label={L.maxBoost} value={text(processor.maxSpeed)} />
-                      <SpecRow label={L.currentClock} value={text(processor.currentSpeed)} />
-                      <SpecRow label={L.cores} value={text(processor.coreCount)} />
-                      <SpecRow label={L.threads} value={text(processor.threadCount)} />
-                      <SpecRow label="L2 cache" value={text(processor.l2Cache)} />
-                      <SpecRow label="L3 cache" value={text(processor.l3Cache)} />
-                    </SpecList>
-                  </div>
-                ))}
+              {showRaw ? t.common.hideRawSmbios : t.common.showRawSmbios}
+            </button>
+            <span className="filter-note">
+              Four DMI tables plus the processor inventory
+            </span>
+          </div>
+
+          {showRaw && (
+            <>
+              <div className="section-label">
+                <span>SMBIOS tables</span>
+                <span className="section-label-line" />
               </div>
-            </Card>
+
+              <div className="grid grid-2">
+                <DmiSectionCard section={dmi.bios} index="03" />
+                <DmiSectionCard section={dmi.system} index="04" />
+                <DmiSectionCard section={dmi.board} index="05" />
+                <DmiSectionCard section={dmi.chassis} index="06" />
+              </div>
+
+              {dmi.processors.length > 0 && (
+                <Card
+                  index="07"
+                  title="SMBIOS processors"
+                  aside={<span className="card-count">{dmi.processors.length} socket</span>}
+                >
+                  <div className="processor-list">
+                    {dmi.processors.map((processor, index) => (
+                      <div className="processor-row" key={`${processor.socket}-${index}`}>
+                        <div className="processor-id">
+                          <span className="eyebrow">Socket {index + 1}</span>
+                          <strong>{text(processor.socket)}</strong>
+                          <span>{text(processor.version)}</span>
+                        </div>
+                        <SpecList className="spec-list-inline">
+                          <SpecRow label={L.maxBoost} value={text(processor.maxSpeed)} />
+                          <SpecRow label={L.currentClock} value={text(processor.currentSpeed)} />
+                          <SpecRow label={L.cores} value={text(processor.coreCount)} />
+                          <SpecRow label={L.threads} value={text(processor.threadCount)} />
+                          <SpecRow label="L2 cache" value={text(processor.l2Cache)} />
+                          <SpecRow label="L3 cache" value={text(processor.l3Cache)} />
+                        </SpecList>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              )}
+            </>
           )}
         </>
       ) : null}

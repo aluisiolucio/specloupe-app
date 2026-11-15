@@ -28,15 +28,12 @@ pub struct Overview {
     pub os_name: Option<String>,
     pub kernel: Option<String>,
     pub architecture: Option<String>,
-    pub desktop: Option<String>,
-    pub session_type: Option<String>,
     pub uptime_seconds: u64,
     pub boot_time_unix: u64,
     pub vendor: Option<String>,
     pub product: Option<String>,
     pub product_version: Option<String>,
     pub chassis_type: Option<String>,
-    pub is_laptop: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Default)]
@@ -165,7 +162,6 @@ pub struct PcieLink {
 pub struct DisplayOutput {
     pub connector: String,
     pub status: String,
-    pub enabled: bool,
     pub current_mode: Option<String>,
     pub modes: Vec<String>,
     pub monitor_name: Option<String>,
@@ -190,7 +186,6 @@ pub struct StorageDisk {
     pub name: String,
     pub path: String,
     pub model: Option<String>,
-    pub vendor: Option<String>,
     pub serial: Option<String>,
     pub firmware: Option<String>,
     pub size_bytes: u64,
@@ -206,9 +201,7 @@ pub struct StorageDisk {
 #[serde(rename_all = "camelCase")]
 pub struct PartitionInfo {
     pub name: String,
-    pub path: String,
     pub size_bytes: u64,
-    pub kind: String,
     pub fstype: Option<String>,
     pub label: Option<String>,
     pub uuid: Option<String>,
@@ -229,7 +222,6 @@ pub struct NetInterface {
     pub duplex: Option<String>,
     pub mtu: Option<u32>,
     pub driver: Option<String>,
-    pub vendor: Option<String>,
     pub device: Option<String>,
     pub pci_address: Option<String>,
     pub is_wireless: bool,
@@ -279,11 +271,6 @@ pub struct Capabilities {
     pub privileged_available: bool,
     pub smart_available: bool,
     pub rapl_locked: bool,
-    pub lm_sensors_available: bool,
-    pub nvidia_smi_available: bool,
-    pub rocm_smi_available: bool,
-    pub vulkaninfo_available: bool,
-    pub glxinfo_available: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Default)]
@@ -339,7 +326,6 @@ pub struct DmiProcessor {
     pub current_speed: Option<String>,
     pub core_count: Option<String>,
     pub thread_count: Option<String>,
-    pub l1_cache: Option<String>,
     pub l2_cache: Option<String>,
     pub l3_cache: Option<String>,
 }
@@ -348,9 +334,7 @@ pub struct DmiProcessor {
 #[serde(rename_all = "camelCase")]
 pub struct SmartInfo {
     pub device: String,
-    pub model: Option<String>,
     pub serial: Option<String>,
-    pub firmware: Option<String>,
     pub health_passed: Option<bool>,
     pub health_text: Option<String>,
     pub temperature_c: Option<f64>,
@@ -411,12 +395,9 @@ pub struct MemoryLive {
 #[serde(rename_all = "camelCase")]
 pub struct GpuLive {
     pub pci_address: String,
-    pub name: String,
     pub freq_mhz: Option<f64>,
     pub temp_c: Option<f64>,
     pub usage_percent: Option<f64>,
-    pub vram_used_bytes: Option<u64>,
-    pub vram_total_bytes: Option<u64>,
 }
 
 #[derive(Debug, Clone, Serialize, Default)]
@@ -444,5 +425,4 @@ pub struct BatteryLive {
     pub voltage_v: Option<f64>,
     pub power_w: Option<f64>,
     pub energy_now_wh: Option<f64>,
-    pub energy_full_wh: Option<f64>,
 }

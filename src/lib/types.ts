@@ -20,15 +20,12 @@ export interface Overview {
   osName: string | null;
   kernel: string | null;
   architecture: string | null;
-  desktop: string | null;
-  sessionType: string | null;
   uptimeSeconds: number;
   bootTimeUnix: number;
   vendor: string | null;
   product: string | null;
   productVersion: string | null;
   chassisType: string | null;
-  isLaptop: boolean;
 }
 
 export interface CpuInfo {
@@ -139,7 +136,6 @@ export interface PcieLink {
 export interface DisplayOutput {
   connector: string;
   status: string;
-  enabled: boolean;
   currentMode: string | null;
   modes: string[];
   monitorName: string | null;
@@ -160,7 +156,6 @@ export interface StorageDisk {
   name: string;
   path: string;
   model: string | null;
-  vendor: string | null;
   serial: string | null;
   firmware: string | null;
   sizeBytes: number;
@@ -174,9 +169,7 @@ export interface StorageDisk {
 
 export interface PartitionInfo {
   name: string;
-  path: string;
   sizeBytes: number;
-  kind: string;
   fstype: string | null;
   label: string | null;
   uuid: string | null;
@@ -195,7 +188,6 @@ export interface NetInterface {
   duplex: string | null;
   mtu: number | null;
   driver: string | null;
-  vendor: string | null;
   device: string | null;
   pciAddress: string | null;
   isWireless: boolean;
@@ -239,11 +231,6 @@ export interface Capabilities {
   privilegedAvailable: boolean;
   smartAvailable: boolean;
   raplLocked: boolean;
-  lmSensorsAvailable: boolean;
-  nvidiaSmiAvailable: boolean;
-  rocmSmiAvailable: boolean;
-  vulkaninfoAvailable: boolean;
-  glxinfoAvailable: boolean;
 }
 
 export interface PrivilegedInfo {
@@ -289,16 +276,13 @@ export interface DmiProcessor {
   currentSpeed: string | null;
   coreCount: string | null;
   threadCount: string | null;
-  l1Cache: string | null;
   l2Cache: string | null;
   l3Cache: string | null;
 }
 
 export interface SmartInfo {
   device: string;
-  model: string | null;
   serial: string | null;
-  firmware: string | null;
   healthPassed: boolean | null;
   healthText: string | null;
   temperatureC: number | null;
@@ -349,12 +333,9 @@ export interface MemoryLive {
 
 export interface GpuLive {
   pciAddress: string;
-  name: string;
   freqMhz: number | null;
   tempC: number | null;
   usagePercent: number | null;
-  vramUsedBytes: number | null;
-  vramTotalBytes: number | null;
 }
 
 export interface TempReading {
@@ -376,7 +357,6 @@ export interface BatteryLive {
   voltageV: number | null;
   powerW: number | null;
   energyNowWh: number | null;
-  energyFullWh: number | null;
 }
 
 export type TabId =

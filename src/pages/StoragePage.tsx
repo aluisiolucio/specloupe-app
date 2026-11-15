@@ -48,6 +48,24 @@ function SmartStrip({ smart }: { smart: SmartInfo }) {
           <span>{L.mediaErrors}</span>
           <strong>{integer(smart.mediaErrors)}</strong>
         </div>
+        {smart.reallocatedSectors !== null && smart.reallocatedSectors > 0 && (
+          <div className="is-warn">
+            <span>{L.reallocatedSectors}</span>
+            <strong>{integer(smart.reallocatedSectors)}</strong>
+          </div>
+        )}
+        {smart.pendingSectors !== null && smart.pendingSectors > 0 && (
+          <div className="is-danger">
+            <span>{L.pendingSectors}</span>
+            <strong>{integer(smart.pendingSectors)}</strong>
+          </div>
+        )}
+        {smart.uncorrectableSectors !== null && smart.uncorrectableSectors > 0 && (
+          <div className="is-danger">
+            <span>{L.uncorrectableSectors}</span>
+            <strong>{integer(smart.uncorrectableSectors)}</strong>
+          </div>
+        )}
       </div>
     </div>
   );

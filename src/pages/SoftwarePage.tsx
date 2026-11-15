@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { Card } from "../components/Card";
 import { Icon } from "../components/Icon";
 import { PageIntro } from "../components/PageIntro";
@@ -12,7 +14,11 @@ interface SoftwarePageProps {
 }
 
 export function SoftwarePage({ info }: SoftwarePageProps) {
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const software = info.software;
+  const visibleExtra = software.extra.filter(
+    (entry) => !/^(home|documentation)_url$/i.test(entry.key),
+  );
   const secureTone =
     software.secureBoot === null ? "neutral" : software.secureBoot ? "ok" : "warn";
 
@@ -31,6 +37,23 @@ export function SoftwarePage({ info }: SoftwarePageProps) {
           </div>
         }
       />
+
+      {(software.kernelCmdline || visibleExtra.length > 0) && (
+        <div className="filter-row">
+          <span className="filter-label">Advanced</span>
+          <button
+            type="button"
+            className={`filter-toggle${showAdvanced ? " is-active" : ""}`}
+            aria-pressed={showAdvanced}
+            onClick={() => setShowAdvanced((current) => !current)}
+          >
+            {showAdvanced ? t.common.hideAdvanced : t.common.showAdvanced}
+          </button>
+          <span className="filter-note">
+            Kernel command line and OS-release extras
+          </span>
+        </div>
+      )}
 
       <div className="grid grid-2">
         <Card index="01" title="Operating system">
@@ -59,7 +82,9 @@ export function SoftwarePage({ info }: SoftwarePageProps) {
               value={<Tag tone={secureTone}>{yesNo(software.secureBoot)}</Tag>}
             />
             <SpecRow label={L.virtualization} value={text(software.virtualization)} />
-            <SpecRow wide label={L.kernelCmdline} value={text(software.kernelCmdline)} />
+            {showAdvanced && (
+              <SpecRow wide label={L.kernelCmdline} value={text(software.kernelCmdline)} />
+            )}
           </SpecList>
         </Card>
 
@@ -86,7 +111,6 @@ export function SoftwarePage({ info }: SoftwarePageProps) {
               label={L.flatpakApps}
               value={software.flatpakCount === null ? "—" : integer(software.flatpakCount)}
             />
-            <SpecRow label={L.architecture} value={text(software.architecture)} />
           </SpecList>
           <p className="aside-note-copy">
             Package counts are read locally from the active package managers. No
@@ -95,10 +119,10 @@ export function SoftwarePage({ info }: SoftwarePageProps) {
         </Card>
       </div>
 
-      {software.extra.length > 0 && (
+      {showAdvanced && visibleExtra.length > 0 && (
         <Card index="05" title={L.osRelease}>
           <SpecList>
-            {software.extra.map((entry) => (
+            {visibleExtra.map((entry) => (
               <SpecRow key={entry.key} label={entry.key} value={entry.value} mono={false} />
             ))}
           </SpecList>

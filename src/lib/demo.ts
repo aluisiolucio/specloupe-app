@@ -52,7 +52,6 @@ function network(): NetInterface[] {
       duplex: null,
       mtu: 65536,
       driver: null,
-      vendor: null,
       device: null,
       pciAddress: null,
       isWireless: false,
@@ -70,7 +69,6 @@ function network(): NetInterface[] {
       duplex: null,
       mtu: 1500,
       driver: "rtw89_8852be",
-      vendor: "10ec",
       device: "RTL8852BE PCIe 802.11ax Wireless Network Controller",
       pciAddress: "0000:02:00.0",
       isWireless: true,
@@ -88,7 +86,6 @@ function network(): NetInterface[] {
       duplex: null,
       mtu: 1500,
       driver: "r8169",
-      vendor: "10ec",
       device: "RTL8111/8168/8211/8411 PCI Express Gigabit Ethernet Controller",
       pciAddress: "0000:03:00.0",
       isWireless: false,
@@ -103,7 +100,6 @@ function network(): NetInterface[] {
       duplex: null,
       mtu: 1500,
       driver: null,
-      vendor: null,
       device: null,
       pciAddress: null,
       isWireless: false,
@@ -123,15 +119,12 @@ export function demoSystemInfo(): SystemInfo {
       osName: "Fedora Linux 44 (Workstation Edition)",
       kernel: "7.2.15-200.fc44.x86_64",
       architecture: "x86_64",
-      desktop: "GNOME",
-      sessionType: "wayland",
       uptimeSeconds,
       bootTimeUnix: now - uptimeSeconds,
       vendor: "ASUSTeK COMPUTER INC.",
       product: "ASUS Vivobook Pro 16X K6604JV",
       productVersion: "1.0",
       chassisType: "Notebook",
-      isLaptop: true,
     },
     cpu: {
       model: "Intel(R) Core(TM) i7-13620H",
@@ -261,7 +254,6 @@ export function demoSystemInfo(): SystemInfo {
           {
             connector: "eDP-1",
             status: "connected",
-            enabled: true,
             currentMode: "1920x1200",
             modes: ["1920x1200", "1920x1080", "1680x1050", "1600x1200", "1280x800"],
             monitorName: "BOE 0x0BCA",
@@ -270,7 +262,6 @@ export function demoSystemInfo(): SystemInfo {
           {
             connector: "DP-1",
             status: "disconnected",
-            enabled: false,
             currentMode: null,
             modes: [],
             monitorName: null,
@@ -279,7 +270,6 @@ export function demoSystemInfo(): SystemInfo {
           {
             connector: "HDMI-A-1",
             status: "disconnected",
-            enabled: false,
             currentMode: null,
             modes: [],
             monitorName: null,
@@ -304,7 +294,6 @@ export function demoSystemInfo(): SystemInfo {
         name: "nvme0n1",
         path: "/dev/nvme0n1",
         model: "WD PC SN740 SDDPNQD-512G",
-        vendor: "Western Digital",
         serial: null,
         firmware: "73113000",
         sizeBytes: 512_110_190_592,
@@ -316,9 +305,7 @@ export function demoSystemInfo(): SystemInfo {
         partitions: [
           {
             name: "nvme0n1p1",
-            path: "/dev/nvme0n1p1",
             sizeBytes: 629_145_600,
-            kind: "part",
             fstype: "vfat",
             label: "EFI",
             uuid: "3A21-8F07",
@@ -330,9 +317,7 @@ export function demoSystemInfo(): SystemInfo {
           },
           {
             name: "nvme0n1p2",
-            path: "/dev/nvme0n1p2",
             sizeBytes: 1_073_741_824,
-            kind: "part",
             fstype: "ext4",
             label: null,
             uuid: "b2f6ab44-1a19-4c0d-a63c-62f3df896b13",
@@ -344,9 +329,7 @@ export function demoSystemInfo(): SystemInfo {
           },
           {
             name: "nvme0n1p3",
-            path: "/dev/nvme0n1p3",
             sizeBytes: 508_792_832_000,
-            kind: "part",
             fstype: "btrfs",
             label: "fedora",
             uuid: "6f0a3d2e-87b4-4a82-9d0a-2f23b1e2c814",
@@ -393,11 +376,6 @@ export function demoSystemInfo(): SystemInfo {
       privilegedAvailable: true,
       smartAvailable: true,
       raplLocked: true,
-      lmSensorsAvailable: false,
-      nvidiaSmiAvailable: false,
-      rocmSmiAvailable: false,
-      vulkaninfoAvailable: false,
-      glxinfoAvailable: true,
     },
   };
 }
@@ -489,7 +467,6 @@ export function demoPrivilegedInfo(): PrivilegedInfo {
           currentSpeed: "2600 MHz",
           coreCount: "10",
           threadCount: "16",
-          l1Cache: "Not Provided",
           l2Cache: "2048 KB",
           l3Cache: "24576 KB",
         },
@@ -498,9 +475,7 @@ export function demoPrivilegedInfo(): PrivilegedInfo {
     smart: [
       {
         device: "/dev/nvme0n1",
-        model: "WD PC SN740 SDDPNQD-512G",
         serial: "2451A8B7C9D2",
-        firmware: "73113000",
         healthPassed: true,
         healthText: "PASSED",
         temperatureC: 43.9,
@@ -566,12 +541,9 @@ export function demoLiveTick(timestampMs: number, tick: number): LiveSnapshot {
     gpus: [
       {
         pciAddress: "0000:00:02.0",
-        name: "Intel Graphics",
         freqMhz: gpuFreq,
         tempC: null,
         usagePercent: null,
-        vramUsedBytes: null,
-        vramTotalBytes: null,
       },
     ],
     temperatures: [
@@ -597,7 +569,6 @@ export function demoLiveTick(timestampMs: number, tick: number): LiveSnapshot {
       voltageV: 15.31,
       powerW: null,
       energyNowWh: null,
-      energyFullWh: null,
     },
     processCount: 418 + (tick % 5),
   };

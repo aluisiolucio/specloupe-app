@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { Card } from "../components/Card";
 import { EmptyState } from "../components/States";
 import { PageIntro } from "../components/PageIntro";
@@ -43,6 +45,7 @@ function ApiCard({ api, index }: { api: GraphicsApiInfo | null; index: string })
 }
 
 export function GpuPage({ info, latest }: GpuPageProps) {
+  const [showModes, setShowModes] = useState(false);
   const first = info.gpus[0];
   const totalDisplays = info.gpus.reduce((count, gpu) => count + gpu.displays.length, 0);
 
@@ -175,14 +178,31 @@ export function GpuPage({ info, latest }: GpuPageProps) {
               index="05"
               title={L.displays}
               flush
-              aside={<span className="card-count">{gpu.displays.length} connectors</span>}
+              aside={
+                <div className="tag-row">
+                  <span className="card-count">{gpu.displays.length} connectors</span>
+                  {gpu.displays.some((display) => display.modes.length > 0) && (
+                    <button
+                      type="button"
+                      className={`filter-toggle${showModes ? " is-active" : ""}`}
+                      aria-pressed={showModes}
+                      onClick={() => setShowModes((current) => !current)}
+                    >
+                      {showModes ? t.common.hideModes : t.common.showModes}
+                    </button>
+                  )}
+                </div>
+              }
             >
               {gpu.displays.length === 0 ? (
                 <p className="muted-copy pad">{t.common.noData}</p>
               ) : (
                 <div className="display-list">
                   {gpu.displays.map((display) => (
-                    <div className="display-row" key={display.connector}>
+                    <div
+                      className={`display-row${showModes ? "" : " is-condensed"}`}
+                      key={display.connector}
+                    >
                       <div className="display-ident">
                         <span className="display-connector">{display.connector}</span>
                         <Tag tone={display.status === "connected" ? "ok" : "muted"}>
@@ -197,14 +217,16 @@ export function GpuPage({ info, latest }: GpuPageProps) {
                         <span>{L.currentMode}</span>
                         <strong>{display.currentMode ?? "—"}</strong>
                       </div>
-                      <div className="display-modes">
-                        {display.modes.slice(0, 4).map((mode, index) => (
-                          <span className="chip" key={`${mode}-${index}`}>{mode}</span>
-                        ))}
-                        {display.modes.length === 0 && (
-                          <span className="muted-copy">—</span>
-                        )}
-                      </div>
+                      {showModes && (
+                        <div className="display-modes">
+                          {display.modes.slice(0, 4).map((mode, index) => (
+                            <span className="chip" key={`${mode}-${index}`}>{mode}</span>
+                          ))}
+                          {display.modes.length === 0 && (
+                            <span className="muted-copy">—</span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

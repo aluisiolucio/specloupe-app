@@ -265,7 +265,6 @@ fn processor_from(record: &DmiRecord) -> Option<DmiProcessor> {
         current_speed: field_value(record, "Current Speed"),
         core_count: field_value(record, "Core Count"),
         thread_count: field_value(record, "Thread Count"),
-        l1_cache: field_value(record, "L1 Cache Handle"),
         l2_cache: field_value(record, "L2 Cache Handle"),
         l3_cache: field_value(record, "L3 Cache Handle"),
     })
@@ -297,9 +296,7 @@ fn is_placeholder(value: &str) -> bool {
 
 fn parse_smart(device: &str, body: &str) -> Option<SmartInfo> {
     let value: Value = serde_json::from_str(body).ok()?;
-    let model = string(&value, &["model_name"]).or_else(|| string(&value, &["scsi_model_name"]));
     let serial = string(&value, &["serial_number"]);
-    let firmware = string(&value, &["firmware_version"]);
     let health_passed = value
         .pointer("/smart_status/passed")
         .and_then(Value::as_bool);
@@ -355,9 +352,7 @@ fn parse_smart(device: &str, body: &str) -> Option<SmartInfo> {
 
     Some(SmartInfo {
         device: device.to_string(),
-        model,
         serial,
-        firmware,
         health_passed,
         health_text,
         temperature_c: temperature,

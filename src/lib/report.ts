@@ -15,6 +15,7 @@ import {
   DASH,
 } from "./format";
 import type { LiveSnapshot, PrivilegedInfo, SystemInfo } from "./types";
+import { t } from "../i18n/en";
 
 export type ReportFormat = "md" | "json";
 
@@ -111,7 +112,7 @@ function buildMarkdown(
   sections.push(
     heading(1, "SpecLoupe report"),
     "",
-    `Generated ${generated} · \`${info.overview.hostname ?? "unknown"}\` · SpecLoupe v0.1.0`,
+    `Generated ${generated} · \`${info.overview.hostname ?? "unknown"}\` · SpecLoupe ${t.app.version}`,
     "",
     includeSensitive
       ? "> Privacy: the report includes serial numbers, MAC addresses and IP addresses."
@@ -131,8 +132,6 @@ function buildMarkdown(
       ["Operating system", info.overview.osName],
       ["Kernel", info.overview.kernel],
       ["Architecture", info.overview.architecture],
-      ["Desktop", info.overview.desktop],
-      ["Session type", info.overview.sessionType],
       ["Uptime", uptime(info.overview.uptimeSeconds)],
       ["Booted", unixDate(info.overview.bootTimeUnix)],
       ["BIOS", [info.board.biosVendor, info.board.biosVersion].filter(Boolean).join(" ")],
@@ -358,20 +357,25 @@ function buildMarkdown(
       );
     }
     if (smart) {
-      sections.push(
-        heading(4, "SMART health"),
-        "",
-        table([
-          ["Health", smart.healthText],
-          ["Temperature", temp(smart.temperatureC)],
-          ["Power-on hours", smart.powerOnHours === null ? null : integer(smart.powerOnHours)],
-          ["Power cycles", smart.powerCycles === null ? null : integer(smart.powerCycles)],
-          ["Data written", smart.dataWrittenBytes === null ? null : bytes(smart.dataWrittenBytes)],
-          ["Wear level used", smart.percentageUsed === null ? null : pct(smart.percentageUsed, 1)],
-          ["Media errors", smart.mediaErrors === null ? null : integer(smart.mediaErrors)],
-        ]),
-        "",
-      );
+      const smartRows: Array<[string, string | null]> = [
+        ["Health", smart.healthText],
+        ["Temperature", temp(smart.temperatureC)],
+        ["Power-on hours", smart.powerOnHours === null ? null : integer(smart.powerOnHours)],
+        ["Power cycles", smart.powerCycles === null ? null : integer(smart.powerCycles)],
+        ["Data written", smart.dataWrittenBytes === null ? null : bytes(smart.dataWrittenBytes)],
+        ["Wear level used", smart.percentageUsed === null ? null : pct(smart.percentageUsed, 1)],
+        ["Media errors", smart.mediaErrors === null ? null : integer(smart.mediaErrors)],
+      ];
+      if (smart.reallocatedSectors) {
+        smartRows.push(["Reallocated sectors", integer(smart.reallocatedSectors)]);
+      }
+      if (smart.pendingSectors) {
+        smartRows.push(["Pending sectors", integer(smart.pendingSectors)]);
+      }
+      if (smart.uncorrectableSectors) {
+        smartRows.push(["Uncorrectable sectors", integer(smart.uncorrectableSectors)]);
+      }
+      sections.push(heading(4, "SMART health"), "", table(smartRows), "");
     }
   }
 
@@ -427,7 +431,9 @@ function buildMarkdown(
       ["Installed packages", info.software.packageCount === null ? null : integer(info.software.packageCount)],
       ["Flatpak apps", info.software.flatpakCount === null ? null : integer(info.software.flatpakCount)],
       ["Kernel command line", info.software.kernelCmdline],
-      ...info.software.extra.map((item) => [item.key, item.value] as [string, string]),
+      ...info.software.extra
+        .filter((item) => !/^(home|documentation)_url$/i.test(item.key))
+        .map((item) => [item.key, item.value] as [string, string]),
     ]),
     "",
   );
@@ -498,7 +504,7 @@ export function buildReport(options: {
   if (format === "json") {
     return JSON.stringify(
       {
-        generator: "SpecLoupe 0.1.0",
+        generator: `SpecLoupe ${t.app.version}`,
         generatedAt: new Date().toISOString(),
         privacy: {
           serialsIncluded: includeSensitive,

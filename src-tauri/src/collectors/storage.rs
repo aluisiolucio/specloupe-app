@@ -37,7 +37,6 @@ pub fn collect() -> Vec<StorageDisk> {
             name: name.clone(),
             path,
             model: json_str(device, "model"),
-            vendor: json_str(device, "vendor"),
             serial: json_str(device, "serial"),
             firmware: json_str(device, "rev"),
             size_bytes,
@@ -66,7 +65,6 @@ fn collect_children(device: &Value, partitions: &mut Vec<PartitionInfo>) {
 
 fn partition_from(device: &Value) -> Option<PartitionInfo> {
     let name = json_str(device, "name")?;
-    let path = json_str(device, "path").unwrap_or_else(|| format!("/dev/{name}"));
     let mountpoint = json_str(device, "mountpoint").or_else(|| {
         device
             .get("mountpoints")
@@ -80,9 +78,7 @@ fn partition_from(device: &Value) -> Option<PartitionInfo> {
 
     Some(PartitionInfo {
         name,
-        path,
         size_bytes: json_u64(device, "size").unwrap_or(0),
-        kind: json_str(device, "type").unwrap_or_else(|| "partition".to_string()),
         fstype: json_str(device, "fstype"),
         label: json_str(device, "label"),
         uuid: json_str(device, "uuid"),

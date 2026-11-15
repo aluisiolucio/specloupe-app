@@ -50,9 +50,6 @@ pub fn collect() -> Vec<NetInterface> {
             duplex: read_clean(format!("{base}/duplex")),
             mtu: read_trim(format!("{base}/mtu")).and_then(|value| value.parse().ok()),
             driver,
-            vendor: uevent
-                .get("PCI_ID")
-                .map(|id| id.split(':').next().unwrap_or(id).to_string()),
             device: pci_description,
             pci_address,
             is_wireless,

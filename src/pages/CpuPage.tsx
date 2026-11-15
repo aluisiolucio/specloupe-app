@@ -21,6 +21,62 @@ const VERDICT_LABEL: Record<string, string> = {
   unknown: L.unknown,
 };
 
+const NOTABLE_FLAGS = [
+  "vmx",
+  "svm",
+  "sev",
+  "sev_es",
+  "sev_snp",
+  "sme",
+  "sgx",
+  "tdx_guest",
+  "hypervisor",
+  "aes",
+  "sha_ni",
+  "vaes",
+  "gfni",
+  "rdrand",
+  "rdseed",
+  "smep",
+  "smap",
+  "umip",
+  "pku",
+  "ospke",
+  "cet",
+  "ibt",
+  "shadow_stack",
+  "md_clear",
+  "flush_l1d",
+  "ibrs",
+  "ibpb",
+  "stibp",
+  "ssbd",
+  "retpoline",
+  "avx",
+  "avx2",
+  "avx512f",
+  "avx512dq",
+  "avx512bw",
+  "avx512vl",
+  "avx512_vnni",
+  "avx_vnni",
+  "amx_tile",
+  "fma",
+  "f16c",
+  "bmi1",
+  "bmi2",
+  "adx",
+  "nx",
+  "lm",
+  "pdpe1gb",
+  "serialize",
+  "movdiri",
+  "movdir64b",
+  "clflushopt",
+  "clwb",
+  "split_lock_detect",
+];
+
 function verdictTone(level: string): "ok" | "accent" | "danger" | "neutral" {
   switch (level) {
     case "safe":
@@ -38,7 +94,10 @@ export function CpuPage({ info, latest }: CpuPageProps) {
   const [showAllFlags, setShowAllFlags] = useState(false);
   const cpu = info.cpu;
   const liveThreads = latest?.cpu.perCore ?? [];
-  const visibleFlags = showAllFlags ? cpu.flags : cpu.flags.slice(0, 64);
+  const notableFlags = NOTABLE_FLAGS.filter((flag) => cpu.flags.includes(flag)).slice(0, 24);
+  const collapsedFlags = notableFlags.length > 0 ? notableFlags : cpu.flags.slice(0, 32);
+  const visibleFlags = showAllFlags ? cpu.flags : collapsedFlags;
+  const hasHiddenFlags = visibleFlags.length < cpu.flags.length;
   const l3 = cpu.caches.find((cache) => cache.level === 3);
 
   return (
@@ -199,7 +258,12 @@ export function CpuPage({ info, latest }: CpuPageProps) {
           ))}
           {cpu.flags.length === 0 && <p className="muted-copy">{t.common.noData}</p>}
         </div>
-        {cpu.flags.length > 64 && (
+        {!showAllFlags && notableFlags.length > 0 && hasHiddenFlags && (
+          <p className="flag-note">
+            Showing notable virtualization, memory-safety and cryptography flags.
+          </p>
+        )}
+        {(hasHiddenFlags || showAllFlags) && (
           <button
             type="button"
             className="link-button"

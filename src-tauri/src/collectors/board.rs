@@ -41,16 +41,6 @@ pub fn collect() -> BoardInfo {
     }
 }
 
-pub fn is_laptop(board: &BoardInfo) -> bool {
-    let kind = board.chassis_type.as_deref().unwrap_or_default();
-    matches!(
-        kind,
-        "Portable" | "Laptop" | "Notebook" | "Sub Notebook" | "Hand Held" | "Tablet" | "Convertible"
-            | "Detachable" | "Docking Station"
-    ) || Path::new("/sys/class/power_supply/BAT0").exists()
-        || Path::new("/sys/class/power_supply/BAT1").exists()
-}
-
 fn chassis_name(code: u32) -> &'static str {
     match code {
         1 => "Other",

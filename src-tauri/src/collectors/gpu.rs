@@ -288,9 +288,6 @@ fn collect_displays(card_path: &str) -> Vec<DisplayOutput> {
         let Some(status) = read_trim(format!("{base}/status")) else {
             continue;
         };
-        let enabled = read_trim(format!("{base}/enabled"))
-            .map(|value| value.eq_ignore_ascii_case("enabled"))
-            .unwrap_or(false);
         let current_mode = read_trim(format!("{base}/mode"))
             .or_else(|| read_trim(format!("{base}/modes")).and_then(|modes| {
                 modes.lines().next().map(str::trim).map(str::to_string)
@@ -315,7 +312,6 @@ fn collect_displays(card_path: &str) -> Vec<DisplayOutput> {
                 .unwrap_or(&name)
                 .to_string(),
             status,
-            enabled,
             current_mode,
             modes,
             monitor_name,

@@ -2,7 +2,7 @@ export const t = {
   app: {
     name: "SpecLoupe",
     tagline: "Every spec under the loupe.",
-    version: "v0.1.2",
+    version: "v0.1.3",
     license: "MIT",
   },
   groups: {
@@ -50,6 +50,16 @@ export const t = {
     refresh: "Refresh",
     showAll: "Show all",
     showLess: "Show less",
+    showAdvanced: "Show advanced details",
+    hideAdvanced: "Hide advanced details",
+    showRawSmbios: "Show raw SMBIOS",
+    hideRawSmbios: "Hide raw SMBIOS",
+    showVirtual: "Show virtual interfaces",
+    hideVirtual: "Hide virtual interfaces",
+    showLinkLocal: "Show link-local addresses",
+    hideLinkLocal: "Hide link-local addresses",
+    showModes: "Show display modes",
+    hideModes: "Hide display modes",
     seconds60: "60 s window",
     liveNow: "Live",
   },
@@ -289,6 +299,7 @@ export const t = {
     wireless: "Wireless",
     wired: "Wired",
     virtual: "Virtual",
+    linkLocalHidden: "Link-local addresses hidden.",
     interfaceName: "Interface",
     // Software
     distro: "Distribution",

@@ -22,15 +22,12 @@ pub fn collect_system_info() -> SystemInfo {
         os_name: os_name(),
         kernel: read_trim("/proc/sys/kernel/osrelease"),
         architecture: Some(std::env::consts::ARCH.to_string()),
-        desktop: env_value(&["XDG_CURRENT_DESKTOP", "XDG_SESSION_DESKTOP", "DESKTOP_SESSION"]),
-        session_type: env_value(&["XDG_SESSION_TYPE"]),
         uptime_seconds: uptime_seconds(),
         boot_time_unix: now_unix().saturating_sub(uptime_seconds()),
         vendor: board.system_vendor.clone(),
         product: board.product_name.clone(),
         product_version: board.product_version.clone(),
         chassis_type: board.chassis_type.clone(),
-        is_laptop: board::is_laptop(&board),
     };
 
     SystemInfo {
@@ -52,11 +49,6 @@ pub fn collect_capabilities() -> Capabilities {
         privileged_available: is_root() || command_exists("pkexec"),
         smart_available: command_exists("smartctl"),
         rapl_locked: Path::new(rapl_path).exists() && read_u64(rapl_path).is_none(),
-        lm_sensors_available: command_exists("sensors"),
-        nvidia_smi_available: command_exists("nvidia-smi"),
-        rocm_smi_available: command_exists("rocm-smi"),
-        vulkaninfo_available: command_exists("vulkaninfo"),
-        glxinfo_available: command_exists("glxinfo"),
     }
 }
 
@@ -71,11 +63,4 @@ fn os_name() -> Option<String> {
         }
     }
     None
-}
-
-fn env_value(keys: &[&str]) -> Option<String> {
-    keys.iter()
-        .filter_map(|key| std::env::var(key).ok())
-        .find(|value| !value.trim().is_empty())
-        .map(|value| value.trim().replace(':', " / "))
 }
