@@ -2,7 +2,7 @@ export const t = {
   app: {
     name: "SpecLoupe",
     tagline: "Every spec under the loupe.",
-    version: "v0.1.1",
+    version: "v0.1.2",
     license: "MIT",
   },
   groups: {
@@ -230,6 +230,10 @@ export const t = {
     formFactor: "Form factor",
     installed: "Installed",
     emptySlot: "Empty slot",
+    freeSlot: "free slot",
+    freeSlots: "free slots",
+    slotsFull: "All slots populated",
+    availableForUpgrade: "Available for upgrade",
     moduleCount: "Modules",
     // GPU
     device: "Device",
@@ -335,6 +339,9 @@ export const t = {
     noNetworkBody: "The kernel did not expose any network interfaces.",
     noModulesTitle: "No module inventory",
     noModulesBody: "SMBIOS did not describe any memory modules. This is common in virtual machines.",
+    noModuleInstalled: "No module installed",
+    slotUpgrade:
+      "This slot is free. Install a matching SODIMM to expand memory.",
     noSmartTitle: "No SMART records",
     noSmartBody: "The privileged helper did not return drive health for the detected devices.",
   },

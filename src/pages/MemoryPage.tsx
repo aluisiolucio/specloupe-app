@@ -6,12 +6,16 @@ import { Tag } from "../components/Tag";
 import type { PrivilegedState } from "../hooks/usePrivileged";
 import { t, L } from "../i18n/en";
 import { bytes, pct, text } from "../lib/format";
-import type { LiveSnapshot, SystemInfo } from "../lib/types";
+import type { DimmInfo, LiveSnapshot, SystemInfo } from "../lib/types";
 
 interface MemoryPageProps {
   info: SystemInfo;
   latest: LiveSnapshot | null;
   privileged: PrivilegedState;
+}
+
+function slotLabel(module: DimmInfo, index: number): string {
+  return module.locator ?? module.bankLocator ?? `Slot ${index + 1}`;
 }
 
 export function MemoryPage({ info, latest, privileged }: MemoryPageProps) {
@@ -28,6 +32,8 @@ export function MemoryPage({ info, latest, privileged }: MemoryPageProps) {
   const freePct = Math.max(0, 100 - usedPct - cachedPct);
   const modules = privileged.data?.dmi?.memoryDevices ?? [];
   const populated = modules.filter((module) => module.populated);
+  const freeSlots = modules.filter((module) => !module.populated);
+  const memoryType = populated[0]?.kind ?? "DDR";
 
   return (
     <div className="page">
@@ -37,7 +43,14 @@ export function MemoryPage({ info, latest, privileged }: MemoryPageProps) {
         description={`${bytes(info.memory.totalBytes)} installed · ${bytes(used)} in use · ${bytes(swapTotal)} swap`}
         aside={
           <div className="tag-row">
-            <Tag tone="accent">DDR</Tag>
+            <Tag tone="accent">{memoryType}</Tag>
+            {modules.length > 0 && (
+              <Tag tone={freeSlots.length > 0 ? "warn" : "muted"}>
+                {freeSlots.length > 0
+                  ? `${freeSlots.length} ${freeSlots.length === 1 ? L.freeSlot : L.freeSlots}`
+                  : L.slotsFull}
+              </Tag>
+            )}
             <Tag>{latest ? "Live · 1 Hz" : t.common.unknown}</Tag>
           </div>
         }
@@ -81,14 +94,6 @@ export function MemoryPage({ info, latest, privileged }: MemoryPageProps) {
         </div>
       </Card>
 
-      <PrivilegedPanel
-        capabilities={info.capabilities}
-        data={privileged.data}
-        loading={privileged.loading}
-        error={privileged.error}
-        onLoad={(refresh) => void privileged.load(refresh)}
-      />
-
       <Card
         index="02"
         title="Module inventory"
@@ -99,36 +104,73 @@ export function MemoryPage({ info, latest, privileged }: MemoryPageProps) {
         }
       >
         {modules.length > 0 ? (
-          <div className="module-grid">
-            {modules.map((module, index) => (
-              <article
-                className={`module-card${module.populated ? "" : " is-empty"}`}
-                key={`${module.locator}-${index}`}
-              >
-                <header className="module-head">
-                  <span className="module-slot">{module.locator ?? `Slot ${index + 1}`}</span>
-                  <Tag tone={module.populated ? "ok" : "muted"}>
-                    {module.populated ? module.size ?? L.installed : L.emptySlot}
-                  </Tag>
-                </header>
-                {module.populated ? (
-                  <SpecList className="spec-list-compact">
-                    <SpecRow label={L.memoryType} value={text(module.kind)} />
-                    <SpecRow label={L.speed} value={text(module.speed)} />
-                    <SpecRow label={L.configuredSpeed} value={text(module.configuredSpeed)} />
-                    <SpecRow label={L.manufacturer} value={text(module.manufacturer)} mono={false} />
-                    <SpecRow label={L.partNumber} value={text(module.partNumber)} />
-                    <SpecRow label={L.rank} value={text(module.rank)} />
-                    <SpecRow label={L.voltage} value={text(module.voltage)} />
-                    <SpecRow label={L.formFactor} value={text(module.formFactor)} />
-                    <SpecRow label={L.serial} value={text(module.serial)} />
-                  </SpecList>
-                ) : (
-                  <p className="muted-copy">{t.labels.emptySlot}</p>
-                )}
-              </article>
-            ))}
-          </div>
+          <>
+            <div className="module-summary">
+              <span>
+                {populated.length} of {modules.length} slots populated
+              </span>
+              {freeSlots.length > 0 && (
+                <span className="module-summary-note">
+                  {freeSlots.length} {freeSlots.length === 1 ? L.freeSlot : L.freeSlots} available
+                  for upgrade
+                </span>
+              )}
+            </div>
+            <div className="module-grid">
+              {modules.map((module, index) => {
+                const label = slotLabel(module, index);
+                return (
+                  <article
+                    className={`module-card${module.populated ? "" : " is-empty"}`}
+                    key={`${label}-${index}`}
+                  >
+                    <header className="module-head">
+                      <div className="module-ident">
+                        <span className="module-slot">{label}</span>
+                        {module.bankLocator && module.bankLocator !== label && (
+                          <span className="module-bank">{module.bankLocator}</span>
+                        )}
+                      </div>
+                      <Tag tone={module.populated ? "ok" : "accent"}>
+                        {module.populated ? module.size ?? L.installed : L.availableForUpgrade}
+                      </Tag>
+                    </header>
+                    {module.populated ? (
+                      <SpecList className="spec-list-compact">
+                        <SpecRow label={L.memoryType} value={text(module.kind)} />
+                        <SpecRow label={L.speed} value={text(module.speed)} />
+                        <SpecRow label={L.configuredSpeed} value={text(module.configuredSpeed)} />
+                        <SpecRow label={L.manufacturer} value={text(module.manufacturer)} mono={false} />
+                        <SpecRow label={L.partNumber} value={text(module.partNumber)} />
+                        <SpecRow label={L.rank} value={text(module.rank)} />
+                        <SpecRow label={L.voltage} value={text(module.voltage)} />
+                        <SpecRow label={L.formFactor} value={text(module.formFactor)} />
+                        <SpecRow label={L.serial} value={text(module.serial)} />
+                      </SpecList>
+                    ) : (
+                      <div className="module-empty">
+                        <p className="module-empty-title">{t.empty.noModuleInstalled}</p>
+                        <p className="module-empty-copy">{t.empty.slotUpgrade}</p>
+                        <SpecList className="spec-list-compact">
+                          <SpecRow label={L.slot} value={label} />
+                          {module.bankLocator && module.bankLocator !== label && (
+                            <SpecRow label={L.bankLocator} value={module.bankLocator} />
+                          )}
+                          {module.formFactor && (
+                            <SpecRow label={L.formFactor} value={module.formFactor} />
+                          )}
+                          {module.kind && (
+                            <SpecRow label={L.memoryType} value={module.kind} />
+                          )}
+                          <SpecRow label={L.status} value={L.availableForUpgrade} tone="ok" />
+                        </SpecList>
+                      </div>
+                    )}
+                  </article>
+                );
+              })}
+            </div>
+          </>
         ) : privileged.data ? (
           <div className="hint-panel is-inline">
             <span className="eyebrow">No SMBIOS modules</span>
@@ -141,6 +183,14 @@ export function MemoryPage({ info, latest, privileged }: MemoryPageProps) {
           </div>
         )}
       </Card>
+
+      <PrivilegedPanel
+        capabilities={info.capabilities}
+        data={privileged.data}
+        loading={privileged.loading}
+        error={privileged.error}
+        onLoad={(refresh) => void privileged.load(refresh)}
+      />
     </div>
   );
 }
