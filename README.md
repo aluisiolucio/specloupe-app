@@ -15,6 +15,20 @@
 
 SpecLoupe reads what your machine already exposes through `/proc`, `/sys`, DMI and device tools, then presents it as a precise instrument panel — not a dashboard of vague cards. It is built with Tauri 2, Rust and React, and keeps everything on your computer.
 
+## Install
+
+Download the latest packages from the [releases page](https://github.com/aluisiolucio/specloupe-app/releases) — no build required.
+
+| Format | Package | Install |
+| --- | --- | --- |
+| Debian / Ubuntu | `SpecLoupe_0.1.3_amd64.deb` | `sudo apt install ./SpecLoupe_0.1.3_amd64.deb` |
+| Fedora / RPM | `SpecLoupe-0.1.3-1.x86_64.rpm` | `sudo dnf install ./SpecLoupe-0.1.3-1.x86_64.rpm` |
+| Portable | `SpecLoupe_0.1.3_amd64.AppImage` | `chmod +x SpecLoupe_0.1.3_amd64.AppImage` then run it |
+
+Replace `0.1.3` with the version you downloaded. Upgrades use the same commands; `apt` and `dnf` replace the previous package. After installing the `.deb` or `.rpm`, launch **SpecLoupe** from your application menu.
+
+The AppImage is self-contained but needs FUSE. If FUSE is unavailable, run it with `APPIMAGE_EXTRACT_AND_RUN=1 ./SpecLoupe_0.1.3_amd64.AppImage`.
+
 ## What it shows
 
 | Page | Contents |
