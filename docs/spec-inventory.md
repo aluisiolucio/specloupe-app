@@ -1,7 +1,7 @@
 # SpecLoupe — complete spec inventory
 
 Review of every value SpecLoupe collects and where it appears. Baseline:
-v0.1.3, after the A + B + C cleanup.
+v0.1.4, after the A + B + C cleanup and the security hardening pass.
 
 Legend:
 
@@ -349,3 +349,17 @@ need (`Address`, `Runtime Size`, `ROM Size`, `Asset Tag`, `SKU Number`, etc.).
 - Physical network links, driver, link speed, addresses.
 - Distribution, kernel, desktop/session, package count.
 - Live package temperature/power, load, memory, fans, battery, sensors.
+
+## 12. Security hardening in v0.1.4
+
+No spec data changed in this release. The desktop shell was tightened:
+
+- Production and development Content Security Policies now restrict scripts,
+  styles, fonts, images and connections to local assets and Tauri IPC.
+- The dialog capability was reduced from all dialog commands to
+  `dialog:allow-save`.
+- `write_report` accepts only `.md`/`.json` paths and a 16 MiB content limit,
+  and no longer creates arbitrary directories.
+- Audit findings: no HTTP client or outbound request code; no shell, filesystem
+  or HTTP plugins; only `/proc`, `/sys`, `/etc/os-release` and efivars are read;
+  the privileged helper runs `dmidecode` and `smartctl -a` read-only.

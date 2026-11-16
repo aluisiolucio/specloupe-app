@@ -21,13 +21,15 @@ Download the latest packages from the [releases page](https://github.com/aluisio
 
 | Format | Package | Install |
 | --- | --- | --- |
-| Debian / Ubuntu | `SpecLoupe_0.1.3_amd64.deb` | `sudo apt install ./SpecLoupe_0.1.3_amd64.deb` |
-| Fedora / RPM | `SpecLoupe-0.1.3-1.x86_64.rpm` | `sudo dnf install ./SpecLoupe-0.1.3-1.x86_64.rpm` |
-| Portable | `SpecLoupe_0.1.3_amd64.AppImage` | `chmod +x SpecLoupe_0.1.3_amd64.AppImage` then run it |
+| Debian / Ubuntu | `SpecLoupe_0.1.4_amd64.deb` | `sudo apt install ./SpecLoupe_0.1.4_amd64.deb` |
+| Fedora / RPM | `SpecLoupe-0.1.4-1.x86_64.rpm` | `sudo dnf install ./SpecLoupe-0.1.4-1.x86_64.rpm` |
+| Portable | `SpecLoupe_0.1.4_amd64.AppImage` | `chmod +x SpecLoupe_0.1.4_amd64.AppImage` then run it |
 
-Replace `0.1.3` with the version you downloaded. Upgrades use the same commands; `apt` and `dnf` replace the previous package. After installing the `.deb` or `.rpm`, launch **SpecLoupe** from your application menu.
+Replace `0.1.4` with the version you downloaded. Upgrades use the same commands; `apt` and `dnf` replace the previous package. After installing the `.deb` or `.rpm`, launch **SpecLoupe** from your application menu.
 
-The AppImage is self-contained but needs FUSE. If FUSE is unavailable, run it with `APPIMAGE_EXTRACT_AND_RUN=1 ./SpecLoupe_0.1.3_amd64.AppImage`.
+The AppImage is self-contained but needs FUSE. If FUSE is unavailable, run it with `APPIMAGE_EXTRACT_AND_RUN=1 ./SpecLoupe_0.1.4_amd64.AppImage`.
+
+Each release lists SHA-256 checksums in the release notes. Verify a downloaded package with `sha256sum`.
 
 ## What it shows
 
@@ -71,6 +73,15 @@ SpecLoupe never escalates itself to root. If it is launched as root, the helper 
 - **No cloud account or sync.**
 - Reports are written only to the location you choose.
 - Sensitive fields are redacted in exports by default.
+
+## Security model
+
+- SpecLoupe runs as your normal user. It never runs itself as root and installs no setuid binary or background daemon.
+- The only elevated step is a fixed, read-only helper launched through PolicyKit after your approval. It runs `dmidecode` and `smartctl -a` and exits.
+- The app has no HTTP client and makes no outbound connections. Fonts and interface assets are bundled locally, and a strict Content Security Policy blocks remote scripts, styles and connections.
+- The Tauri IPC surface is limited to four app commands and the native save dialog. No shell, filesystem or HTTP plugins are exposed to the webview.
+- Reports are written only to the path you choose in the save dialog, accept only `.md`/`.json`, and omit serials, MACs, IPs, UUIDs and asset tags unless you opt in.
+- The packages are not GPG-signed; verify the SHA-256 checksums published with each release.
 
 ## Requirements
 

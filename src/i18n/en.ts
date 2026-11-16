@@ -2,7 +2,7 @@ export const t = {
   app: {
     name: "SpecLoupe",
     tagline: "Every spec under the loupe.",
-    version: "v0.1.3",
+    version: "v0.1.4",
     license: "MIT",
   },
   groups: {
