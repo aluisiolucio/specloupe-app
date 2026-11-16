@@ -31,6 +31,70 @@ The AppImage is self-contained but needs FUSE. If FUSE is unavailable, run it wi
 
 Each release lists SHA-256 checksums in the release notes. Verify a downloaded package with `sha256sum`.
 
+## Uninstall
+
+Removing the package does not remove the WebKit profile or the reports you exported. Use the steps for your install format, then clean the user data.
+
+### Package installs
+
+Fedora / RPM:
+
+```bash
+sudo dnf remove spec-loupe
+```
+
+Debian / Ubuntu:
+
+```bash
+sudo apt purge spec-loupe
+```
+
+This removes `/usr/bin/specloupe`, the desktop entry and the icons. Confirm with:
+
+```bash
+command -v specloupe     # prints nothing when removed
+rpm -q spec-loupe        # Fedora: package spec-loupe is not installed
+dpkg -s spec-loupe       # Debian: package is not installed
+```
+
+### AppImage
+
+Delete the AppImage file. If AppImageLauncher moved it into `~/Applications`, remove that copy and its menu entry:
+
+```bash
+rm -f ~/Applications/SpecLoupe_0.1.4_amd64.AppImage
+rm -f ~/.local/share/applications/*SpecLoupe*.desktop
+```
+
+### Remove user data
+
+SpecLoupe keeps a local WebKit profile and cache under the app identifier. It contains interface state, not credentials or hardware reports. Remove it for a clean uninstall:
+
+```bash
+rm -rf ~/.local/share/io.github.aluisiolucio.SpecLoupe
+rm -rf ~/.cache/io.github.aluisiolucio.SpecLoupe
+rm -rf ~/.config/io.github.aluisiolucio.SpecLoupe
+```
+
+Exported reports live wherever you saved them; the app does not keep copies. Delete those `.md` and `.json` files separately. The GTK save dialog may also list them under your desktop's recent files, which you can clear from the file manager.
+
+### Optional: remove dependencies
+
+`dmidecode`, `smartmontools`, `pciutils`, `mesa-demos`, `vulkan-tools` and `lm_sensors` are separate system packages shared with other tools. Remove them only if nothing else needs them:
+
+```bash
+sudo dnf remove dmidecode smartmontools pciutils mesa-demos vulkan-tools lm_sensors
+```
+
+### Verify
+
+```bash
+command -v specloupe || echo "binary removed"
+test ! -e ~/.local/share/io.github.aluisiolucio.SpecLoupe && echo "profile removed"
+```
+
+SpecLoupe installs no daemon, systemd service, setuid helper or system user. Once the package, app profile and exported reports are gone, nothing remains. You can also delete the downloaded package from your Downloads folder.
+
 ## What it shows
 
 | Page | Contents |
